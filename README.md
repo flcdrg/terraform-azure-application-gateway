@@ -6,11 +6,11 @@ Demo repo using Terraform to deploy a simple app to Azure using GitHub Actions
 
 In HCP Terraform:
 
-1. New | Workspace
+1. **New** | **Workspace**
 2. Select project
 3. Click **Create**
 4. Select CLI-driven workflow
-5. Enter workspace name 'terraform-azure-demo'
+5. Enter workspace name 'terraform-appgw'
 
 <https://www.hashicorp.com/en/blog/access-azure-from-hcp-terraform-with-oidc-federation>
 
@@ -19,18 +19,20 @@ In HCP Terraform:
 1. Create Azure resource group
 
     ```bash
-    az group create --name rg-terraform-azure-demo-australiaeast --location australiaeast
+    az group create --name rg-terraform-appgw-australiaeast --location australiaeast
     ```
 
 2. Create service principal and role assignments
 
     ```bash
-    az ad sp create-for-rbac --name sp-terraform-azure-demo-australiaeast --role Contributor --scopes /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-terraform-azure-demo-australiaeast
-
-    az role assignment create --assignee sp-terraform-azure-demo-australiaeast --role "Role Based Access Control Administrator" --scope /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-terraform-azure-demo-australiaeast
+    az ad sp create-for-rbac --name sp-terraform-appgw-australiaeast --role Contributor --scopes /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-terraform-appgw-australiaeast
     ```
 
-Make a note of the appID and tenant ID
+    Make a note of the appID and tenant ID. Use the appId in the next command:
+
+    ```bash
+    az role assignment create --assignee appId --role "Role Based Access Control Administrator" --scope /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-terraform-appgw-australiaeast
+    ```
 
 Create credential.json
 
@@ -38,7 +40,7 @@ Create credential.json
 {
     "name": "tfc-plan-credential",
     "issuer": "https://app.terraform.io",
-    "subject": "organization:flcdrg:project:my-project-name:workspace:terraform-azure-demo:run_phase:plan",
+    "subject": "organization:flcdrg:project:my-project-name:workspace:terraform-appgw:run_phase:plan",
     "description": "Terraform Plan",
     "audiences": [
         "api://AzureADTokenExchange"
@@ -60,10 +62,6 @@ Back in HCP Terraform, set the following environment variables in your workspace
 `TFC_AZURE_RUN_CLIENT_ID` = \<appId value\>
 `ARM_SUBSCRIPTION_ID` = Azure subscription id
 `ARM_TENANT_ID` = Azure tenant id
-
-And the following Terraform variables:
-
-`mssql_azuread_administrator_object_id` = the Entra ID object ID of an account to set as administrator
 
 Click on your profile and select **Account settings**, then **Tokens**.
 Click on **Create an API token**
