@@ -130,7 +130,7 @@ jobs:
           $json = terraform output -json | ConvertFrom-Json
 
           # Create GitHub variables
-          "STORAGE1NAME=${json.storage1.value}" >> $GITHUB_ENV
+          "STORAGE1NAME=$($json.storage1.value)" >> $env:GITHUB_ENV
         shell: pwsh
 
       # Login With OpenID Connect
