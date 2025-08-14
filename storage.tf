@@ -22,6 +22,13 @@ resource "azurerm_storage_account_static_website" "website" {
   error_404_document = "404.html"
 }
 
+# Allow workflow/pipeline access to write to blob storage
+resource "azurerm_role_assignment" "storage" {
+  scope                = azurerm_storage_account.storage.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 output "storage1" {
   value = azurerm_storage_account.storage.name
 }
