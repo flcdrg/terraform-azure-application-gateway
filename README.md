@@ -36,7 +36,7 @@ In HCP Terraform:
     az role assignment create --assignee appId --role "Role Based Access Control Administrator" --scope /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-terraform-appgw-australiaeast
     ```
 
-3. Create credential.json
+3. Create `credential.json`
 
     ```json
     {
@@ -56,25 +56,53 @@ In HCP Terraform:
     az ad app federated-credential create --id xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --parameters credential.json
     ```
 
-    Update the credential.json file and replace 'plan' with 'apply' (3 places). Create a second federated credential by running the above command again.
+    Update the `credential.json` file and replace 'plan' with 'apply' (3 places). Create a second federated credential by running the above command again.
 
-5. Back in HCP Terraform, set the following environment variables in your workspace
+5. Repeat this process to enable authentication from GitHub Actions (for the deployment to the storage accounts). Replace `octo-org` with your username or organisation, and `octo-repo` with the GitHub repository name.
+
+    ```json
+    {
+        "name": "main",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "subject": "repo:octo-org/octo-repo:ref:refs/heads/main",
+        "description": "Main branch",
+        "audiences": [
+            "api://AzureADTokenExchange"
+        ]
+    }
+    ```
+
+6. Get the Azure subscription ID:
+
+    ```bash
+    az account subscription list
+    ```
+
+7. Back in HCP Terraform, set the following environment variables in your workspace
 
     - `TFC_AZURE_PROVIDER_AUTH` = true
     - `TFC_AZURE_RUN_CLIENT_ID` = \<appId value\>
     - `ARM_SUBSCRIPTION_ID` = Azure subscription id
     - `ARM_TENANT_ID` = Azure tenant id
 
-6. Click on your profile and select **Account settings**, then **Tokens**.
-7. Click on **Create an API token**
-8. In **Description** field enter `terraform-appgw-australiaeast`
-9. Review (and adjust if required) the expiration date
-10. Click **Create**
-11. Note the token value.
+8. Click on your profile and select **Account settings**, then **Tokens**.
+9. Click on **Create an API token**
+10. In **Description** field enter `terraform-appgw-australiaeast`
+11. Review (and adjust if required) the expiration date
+12. Click **Create**
+13. Note the token value.
 
-To allow the GitHub Action workflows to connect to HCP Terraform, in the GitHub project
+## GitHub Actions secrets
+
+To allow the GitHub Action workflows to connect to HCP Terraform and to Azure, in the GitHub project
 
 1. Go to **Settings**, **Secrets and Variables**
 2. In **Actions**, click on **New repository secret**
 3. In **Name**, enter `TF_API_TOKEN`
 4. In **Secret**, paste the HCP Terraform token, and click **Add secret**
+5. Also add the same variable as a **Dependabot secret** (so that Dependabot pull requests can succeed)
+6. Repeat this process for the following variables. They only need to be added as Repository Secrets:
+
+    - `AZURE_CLIENT_ID` the Application (client) ID
+    - `AZURE_TENANT_ID` the Directory (tenant) ID
+    - `AZURE_SUBSCRIPTION_ID` your subscription ID

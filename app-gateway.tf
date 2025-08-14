@@ -36,16 +36,17 @@ resource "azurerm_application_gateway" "network" {
   }
 
   backend_address_pool {
-    name = local.backend_address_pool_name
+    name  = local.backend_address_pool_name
+    fqdns = [azurerm_storage_account.storage.primary_web_host]
   }
 
   backend_http_settings {
-    name                  = local.http_setting_name
-    cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
-    port                  = 80
-    protocol              = "Http"
-    request_timeout       = 60
+    name                                = local.http_setting_name
+    cookie_based_affinity               = "Disabled"
+    port                                = 80
+    protocol                            = "Http"
+    request_timeout                     = 60
+    pick_host_name_from_backend_address = true
   }
 
   http_listener {
