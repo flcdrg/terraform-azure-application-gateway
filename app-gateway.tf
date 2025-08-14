@@ -55,17 +55,26 @@ resource "azurerm_application_gateway" "network" {
   }
 
   http_listener {
-    name                           = local.listener_name
+    name                           = "${local.listener_name}-1"
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Http"
+    host_name                      = "web1.flcdrg.com"
+  }
+
+  http_listener {
+    name                           = "${local.listener_name}-2"
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = local.frontend_port_name
+    protocol                       = "Http"
+    host_name                      = "web2.flcdrg.com"
   }
 
   request_routing_rule {
     name                       = "${local.request_routing_rule_name}-1"
     priority                   = 9
     rule_type                  = "Basic"
-    http_listener_name         = local.listener_name
+    http_listener_name         = "${local.listener_name}-1"
     backend_address_pool_name  = "${local.backend_address_pool_name}-1"
     backend_http_settings_name = local.http_setting_name
   }
@@ -74,7 +83,7 @@ resource "azurerm_application_gateway" "network" {
     name                       = "${local.request_routing_rule_name}-2"
     priority                   = 10
     rule_type                  = "Basic"
-    http_listener_name         = local.listener_name
+    http_listener_name         = "${local.listener_name}-2"
     backend_address_pool_name  = "${local.backend_address_pool_name}-2"
     backend_http_settings_name = local.http_setting_name
   }
