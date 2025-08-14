@@ -21,3 +21,7 @@ resource "azurerm_storage_account_static_website" "website" {
   index_document     = "index.html"
   error_404_document = "404.html"
 }
+
+output "storage1" {
+  value = azurerm_storage_account.storage.name
+}
