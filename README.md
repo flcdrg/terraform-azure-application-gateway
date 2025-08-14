@@ -64,8 +64,8 @@ In HCP Terraform:
     {
         "name": "main",
         "issuer": "https://token.actions.githubusercontent.com",
-        "subject": "repo:octo-org/octo-repo:ref:refs/heads/main",
-        "description": "Main branch",
+        "subject": "repo:octo-org/octo-repo:environment:production",
+        "description": "Production environment",
         "audiences": [
             "api://AzureADTokenExchange"
         ]

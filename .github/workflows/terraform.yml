@@ -119,7 +119,19 @@ jobs:
 
       - name: Terraform Output
         run: |
-          terraform output -json
+          # Produces output like:
+          # {
+          #   "storage1": {
+          #       "sensitive": false,
+          #       "type": "string",
+          #       "value": "sttfappgwauea7k"
+          #     }
+          # }
+          $json = terraform output -json | ConvertFrom-Json
+
+          # Create GitHub variables
+          "STORAGE1NAME=${json.storage1.value}" >> $GITHUB_ENV
+        shell: pwsh
 
       # Login With OpenID Connect
       - name: Azure Login
@@ -134,5 +146,4 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az account show
-            az storage -h        
+            az storage blob upload-batch --account-name $STORAGE1NAME --destination '$web' --source web1 --overwrite true --auth-mode login
