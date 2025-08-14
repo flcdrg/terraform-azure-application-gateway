@@ -121,7 +121,7 @@ jobs:
         run: |
           # Produces output like:
           # {
-          #   "storage1": {
+          #   "storage1_name": {
           #       "sensitive": false,
           #       "type": "string",
           #       "value": "sttfappgwauea7k"
@@ -130,7 +130,8 @@ jobs:
           $json = terraform output -json | ConvertFrom-Json
 
           # Create GitHub variables
-          "STORAGE1NAME=$($json.storage1.value)" >> $env:GITHUB_ENV
+          "STORAGE1NAME=$($json.storage1_name.value)" >> $env:GITHUB_ENV
+          "STORAGE2NAME=$($json.storage2_name.value)" >> $env:GITHUB_ENV
         shell: pwsh
 
       # Login With OpenID Connect
@@ -147,3 +148,4 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az storage blob upload-batch --account-name $STORAGE1NAME --destination '$web' --source web1 --overwrite true --auth-mode login
+            az storage blob upload-batch --account-name $STORAGE2NAME --destination '$web' --source web2 --overwrite true --auth-mode login

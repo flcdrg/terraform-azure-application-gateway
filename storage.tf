@@ -1,4 +1,6 @@
 resource "random_string" "storage_suffix" {
+  count = 2
+
   numeric = true
   special = false
   length  = 3
@@ -6,7 +8,9 @@ resource "random_string" "storage_suffix" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                             = "sttfappgwaue${random_string.storage_suffix.result}"
+  count = 2
+
+  name                             = "sttfappgwaue${count.index}${random_string.storage_suffix[count.index].result}"
   resource_group_name              = data.azurerm_resource_group.rg.name
   location                         = data.azurerm_resource_group.rg.location
   account_tier                     = "Standard"
@@ -17,18 +21,26 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_storage_account_static_website" "website" {
-  storage_account_id = azurerm_storage_account.storage.id
+  count = 2
+
+  storage_account_id = azurerm_storage_account.storage[count.index].id
   index_document     = "index.html"
   error_404_document = "404.html"
 }
 
 # Allow workflow/pipeline access to write to blob storage
 resource "azurerm_role_assignment" "storage" {
-  scope                = azurerm_storage_account.storage.id
+  count = 2
+
+  scope                = azurerm_storage_account.storage[count.index].id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
-output "storage1" {
-  value = azurerm_storage_account.storage.name
+output "storage1_name" {
+  value = azurerm_storage_account.storage[0].name
+}
+
+output "storage2_name" {
+  value = azurerm_storage_account.storage[1].name
 }

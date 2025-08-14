@@ -36,8 +36,13 @@ resource "azurerm_application_gateway" "network" {
   }
 
   backend_address_pool {
-    name  = local.backend_address_pool_name
-    fqdns = [azurerm_storage_account.storage.primary_web_host]
+    name  = "${local.backend_address_pool_name}-1"
+    fqdns = [azurerm_storage_account.storage[0].primary_web_host]
+  }
+
+  backend_address_pool {
+    name  = "${local.backend_address_pool_name}-2"
+    fqdns = [azurerm_storage_account.storage[1].primary_web_host]
   }
 
   backend_http_settings {
@@ -57,11 +62,20 @@ resource "azurerm_application_gateway" "network" {
   }
 
   request_routing_rule {
-    name                       = local.request_routing_rule_name
+    name                       = "${local.request_routing_rule_name}-1"
     priority                   = 9
     rule_type                  = "Basic"
     http_listener_name         = local.listener_name
-    backend_address_pool_name  = local.backend_address_pool_name
+    backend_address_pool_name  = "${local.backend_address_pool_name}-1"
+    backend_http_settings_name = local.http_setting_name
+  }
+
+  request_routing_rule {
+    name                       = "${local.request_routing_rule_name}-2"
+    priority                   = 10
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name
+    backend_address_pool_name  = "${local.backend_address_pool_name}-2"
     backend_http_settings_name = local.http_setting_name
   }
 }
