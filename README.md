@@ -1,6 +1,6 @@
 # Azure Application Gateway with Terraform
 
-Demo repo using Terraform to deploy an [Azure Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/overview?WT.mc_id=DOP-MVP-5001655) resource
+Demo repo using Terraform to deploy an [Azure Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/overview?WT.mc_id=DOP-MVP-5001655) resource, with two Azure Storage Accounts acting as backends [hosting static websites](https://learn.microsoft.com/azure/storage/blobs/storage-blob-static-website?WT.mc_id=DOP-MVP-5001655).
 
 ## Developer/environment configuration
 
